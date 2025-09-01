@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Juego Scrum - Delantera (Diseño Mejorado)</title>
+  <title>Juego Scrum - Delantera (Diseño Mejorado + FACE_POS)</title>
   <style>
     :root {
       --ok:#22c55e; --bad:#ef4444; --neutral:#94a3b8;
@@ -28,7 +28,11 @@
     .player{ background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding:10px; display:flex; align-items:center; justify-content:space-between; cursor:grab }
     .player:active{ cursor:grabbing }
     .left-part{ display:flex; align-items:center; gap:12px; }
-    .photo{ width:56px; height:56px; border-radius:10px; object-fit:cover; object-position:50% 50%; border:1px solid #e5e7eb }
+    .photo{
+      width:56px; height:56px; border-radius:10px;
+      object-fit:cover; object-position:50% 50%; /* centro por defecto */
+      border:1px solid #e5e7eb
+    }
     .info h3{ margin:0; font-size:15px }
     .right-part{ text-align:right; display:flex; flex-direction:column; align-items:flex-end; gap:4px; }
     .cost{ font-weight:700; color:var(--accent); }
@@ -70,6 +74,7 @@
     document.getElementById('budgetTop').textContent = BUDGET;
     document.getElementById('budgetFoot').textContent = BUDGET;
 
+    /* Tus links tal cual los pasaste */
     const PLAYERS = [
       { id:'messi',    nombre:'Lionel Messi',          pais:'Argentina', costo:10, goles:110, foto:'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Lionel-Messi-Argentina-2022-FIFA-World-Cup_%28cropped%29.jpg/640px-Lionel-Messi-Argentina-2022-FIFA-World-Cup_%28cropped%29.jpg' },
       { id:'cr7',      nombre:'Cristiano Ronaldo',     pais:'Portugal',  costo:9,  goles:130, foto:'https://upload.wikimedia.org/wikipedia/commons/8/8c/Cristiano_Ronaldo_2018.jpg' },
@@ -79,9 +84,24 @@
       { id:'drogba',   nombre:'Didier Drogba',         pais:'Costa de Marfil', costo:5, goles:65, foto:'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Didier_Drogba.JPG/250px-Didier_Drogba.JPG' },
       { id:'eto',      nombre:'Samuel Eto’o',          pais:'Camerún',   costo:4,  goles:56,  foto:'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Samuel_Eto%27o.jpg/640px-Samuel_Eto%27o.jpg' },
       { id:'chicha',   nombre:'Javier "Chicharito" Hernández', pais:'México', costo:3, goles:52, foto:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQV5uvms_anbvyOWiQAGVv4gRfDnt5a0vPHDpYJ1zoVbuPbwIFRBB49NCDbxa7rc2GI-C8&usqp=CAU' },
-      { id:'totti',    nombre:'Francesco Totti',       pais:'Italia',    costo:2,  goles:9,   foto:'https://c8.alamy.com/comp/G9CEN7/soccer-2006-fifa-world-cup-germany-group-e-italy-v-usa-fritz-walter-G9CEN7.jpgjpg' },
+      { id:'totti',    nombre:'Francesco Totti',       pais:'Italia',    costo:2,  goles:9,   foto:'https://grupovierci.brightspotcdn.com/dims4/default/e6f7cdd/2147483647/strip/false/crop/600x450+0+0/resize/600x450!/quality/90/?url=https%3A%2F%2Fk2-prod-grupo-vierci.s3.us-east-1.amazonaws.com%2Fbrightspot%2Fadjuntos%2F169%2Fimagenes%2F007%2F389%2F0007389861.jpg' },
       { id:'alexis',   nombre:'Alexis Sánchez',        pais:'Chile',     costo:4,  goles:51,  foto:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTFCByW9kfdb41E9ywLnybVzTYriSr4lPictZTESk5_9IWupeeKcZ9upYRD8TAojFz0vk0&usqp=CAU' },
     ];
+
+    /* Mapa de foco por jugador. Modificá los porcentajes para ajustar encuadre.
+       Formato: 'X% Y%'. Y% menor = sube encuadre (útil si la cara queda alta). */
+    const FACE_POS = {
+      messi:     '50% 45%',
+      cr7:       '50% 42%',
+      ronaldo:   '50% 42%',
+      henry:     '50% 45%',
+      vanbasten: '50% 45%',
+      drogba:    '50% 45%',
+      eto:       '50% 10%',
+      chicha:    '50% 45%',
+      totti:     '50% 45%',
+      alexis:    '50% 42%',
+    };
 
     const leftCol = document.getElementById('leftCol');
     const rightCol = document.getElementById('rightCol');
@@ -118,6 +138,16 @@
       img.className = 'photo';
       img.src = p.foto;
       img.alt = `${p.nombre}`;
+      img.addEventListener('load', () => {
+        img.style.objectPosition = FACE_POS[p.id] || '50% 50%';
+      });
+      img.addEventListener('error', () => {
+        // Fallback simple si la imagen no carga (p.ej. enlaces con error)
+        img.style.background = '#eee';
+        img.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+          `<svg xmlns="http://www.w3.org/2000/svg" width="56" height="56"><rect width="56" height="56" fill="#e5e7eb"/><text x="50%" y="54%" font-size="14" text-anchor="middle" fill="#6b7280">IMG</text></svg>`
+        );
+      });
       leftPart.appendChild(img);
 
       const info = document.createElement('div');
