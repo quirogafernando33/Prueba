@@ -76,28 +76,28 @@
 
     /* Tus links tal cual los pasaste */
     const PLAYERS = [
-      { id:'messi',    nombre:'Lionel Messi',          pais:'Argentina', costo:10, goles:110, foto:'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Lionel-Messi-Argentina-2022-FIFA-World-Cup_%28cropped%29.jpg/640px-Lionel-Messi-Argentina-2022-FIFA-World-Cup_%28cropped%29.jpg' },
-      { id:'cr7',      nombre:'Cristiano Ronaldo',     pais:'Portugal',  costo:9,  goles:130, foto:'https://upload.wikimedia.org/wikipedia/commons/8/8c/Cristiano_Ronaldo_2018.jpg' },
-      { id:'ronaldo',  nombre:'Ronaldo Nazário',       pais:'Brasil',    costo:8,  goles:62,  foto:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxlRKlWiG2gN3GGSAEOE5s41Pfemr-Q-C75g&s' },
+      { id:'messi',    nombre:'Lionel Messi',          pais:'Argentina', costo:9, goles:110, foto:'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Lionel-Messi-Argentina-2022-FIFA-World-Cup_%28cropped%29.jpg/640px-Lionel-Messi-Argentina-2022-FIFA-World-Cup_%28cropped%29.jpg' },
+      { id:'cr7',      nombre:'Cristiano Ronaldo',     pais:'Portugal',  costo:8,  goles:130, foto:'https://upload.wikimedia.org/wikipedia/commons/8/8c/Cristiano_Ronaldo_2018.jpg' },
+      { id:'ronaldo',  nombre:'Ronaldo Nazário',       pais:'Brasil',    costo:9,  goles:62,  foto:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxlRKlWiG2gN3GGSAEOE5s41Pfemr-Q-C75g&s' },
       { id:'henry',    nombre:'Thierry Henry',         pais:'Francia',   costo:7,  goles:51,  foto:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8a7hkFWX_0QSNViXLu1IVuvYTvh9CKIrL0w&s' },
-      { id:'vanbasten',nombre:'Marco van Basten',      pais:'Países Bajos', costo:6, goles:24, foto:'https://assets.goal.com/images/v3/blt01f682a907f9ed27/crop/MM5DCOBYHE5DCMBWGM5G433XMU5DEMBVHIYA====/b4361e12d27e01a3bd3bcc429c5dc2aa91bb6a77.jpg?auto=webp&format=pjpg&width=3840&quality=60' },
+      { id:'wayne',    nombre:'Wayne Rooney',          pais:'Inglaterra', costo:6, goles:53, foto:'https://e00-elmundo.uecdn.es/mundial/2006/html/estrellas/img/rooney.jpg' },
       { id:'drogba',   nombre:'Didier Drogba',         pais:'Costa de Marfil', costo:5, goles:65, foto:'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Didier_Drogba.JPG/250px-Didier_Drogba.JPG' },
       { id:'eto',      nombre:'Samuel Eto’o',          pais:'Camerún',   costo:4,  goles:56,  foto:'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Samuel_Eto%27o.jpg/640px-Samuel_Eto%27o.jpg' },
-      { id:'chicha',   nombre:'Javier "Chicharito" Hernández', pais:'México', costo:3, goles:52, foto:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQV5uvms_anbvyOWiQAGVv4gRfDnt5a0vPHDpYJ1zoVbuPbwIFRBB49NCDbxa7rc2GI-C8&usqp=CAU' },
-      { id:'totti',    nombre:'Francesco Totti',       pais:'Italia',    costo:2,  goles:9,   foto:'https://grupovierci.brightspotcdn.com/dims4/default/e6f7cdd/2147483647/strip/false/crop/600x450+0+0/resize/600x450!/quality/90/?url=https%3A%2F%2Fk2-prod-grupo-vierci.s3.us-east-1.amazonaws.com%2Fbrightspot%2Fadjuntos%2F169%2Fimagenes%2F007%2F389%2F0007389861.jpg' },
-      { id:'alexis',   nombre:'Alexis Sánchez',        pais:'Chile',     costo:4,  goles:51,  foto:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTFCByW9kfdb41E9ywLnybVzTYriSr4lPictZTESk5_9IWupeeKcZ9upYRD8TAojFz0vk0&usqp=CAU' },
+      { id:'chicha',   nombre:'Javier "Chicharito" Hernández', pais:'México', costo:1, goles:52, foto:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQV5uvms_anbvyOWiQAGVv4gRfDnt5a0vPHDpYJ1zoVbuPbwIFRBB49NCDbxa7rc2GI-C8&usqp=CAU' },
+      { id:'totti',    nombre:'Francesco Totti',       pais:'Italia',    costo:6,  goles:9,   foto:'https://grupovierci.brightspotcdn.com/dims4/default/e6f7cdd/2147483647/strip/false/crop/600x450+0+0/resize/600x450!/quality/90/?url=https%3A%2F%2Fk2-prod-grupo-vierci.s3.us-east-1.amazonaws.com%2Fbrightspot%2Fadjuntos%2F169%2Fimagenes%2F007%2F389%2F0007389861.jpg' },
+      { id:'alexis',   nombre:'Alexis Sánchez',        pais:'Chile',     costo:2,  goles:51,  foto:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTFCByW9kfdb41E9ywLnybVzTYriSr4lPictZTESk5_9IWupeeKcZ9upYRD8TAojFz0vk0&usqp=CAU' },
     ];
 
     /* Mapa de foco por jugador. Modificá los porcentajes para ajustar encuadre.
        Formato: 'X% Y%'. Y% menor = sube encuadre (útil si la cara queda alta). */
     const FACE_POS = {
-      messi:     '50% 35%',
-      cr7:       '50% 35%',
-      ronaldo:   '50% 35%',
-      henry:     '50% 35%',
-      vanbasten: '50% 45%',
+      messi:     '50% 15%',
+      cr7:       '50% 15%',
+      ronaldo:   '50% 15%',
+      henry:     '50% 15%',
+      wayne: '50% 45%',
       drogba:    '50% 45%',
-      eto:       '50% 10%',
+      eto:       '50% 5%',
       chicha:    '50% 40%',
       totti:     '50% 45%',
       alexis:    '50% 42%',
