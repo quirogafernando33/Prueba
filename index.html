@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Juego Scrum - Delantera (Drag & Drop + Fotos + Goles)</title>
+  <title>Juego Scrum - Delantera (Diseño Mejorado)</title>
   <style>
     :root {
       --ok:#22c55e; --bad:#ef4444; --neutral:#94a3b8;
@@ -25,13 +25,16 @@
 
     .list{ display:grid; gap:10px; min-height:320px }
 
-    .player{ background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding:10px; display:grid; grid-template-columns:auto 1fr auto; gap:12px; align-items:center; cursor:grab }
+    .player{ background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding:10px; display:flex; align-items:center; justify-content:space-between; cursor:grab }
     .player:active{ cursor:grabbing }
+    .left-part{ display:flex; align-items:center; gap:12px; }
     .photo{ width:48px; height:48px; border-radius:10px; object-fit:cover; border:1px solid #e5e7eb }
     .info h3{ margin:0; font-size:15px }
     .meta{ margin-top:2px; font-size:12px; color:var(--muted) }
+    .right-part{ text-align:right; display:flex; flex-direction:column; align-items:flex-end; gap:4px; }
     .cost{ font-weight:700; color:var(--accent); }
-    .remove{ display:inline-grid; place-items:center; width:26px; height:26px; border-radius:8px; background:#fee2e2; color:#991b1b; border:1px solid #fecaca; cursor:pointer }
+    .goals{ font-size:12px; color:var(--muted); display:flex; align-items:center; gap:6px }
+    .remove{ margin-top:4px; display:inline-grid; place-items:center; width:22px; height:22px; border-radius:6px; background:#fee2e2; color:#991b1b; border:1px solid #fecaca; cursor:pointer; font-weight:700 }
 
     .footer{ display:flex; gap:10px; justify-content:center; margin-top:8px; color:#374151; font-size:14px }
     .badge{ background:#f3f4f6; border:1px solid #e5e7eb; padding:6px 10px; border-radius:999px }
@@ -68,22 +71,17 @@
     document.getElementById('budgetTop').textContent = BUDGET;
     document.getElementById('budgetFoot').textContent = BUDGET;
 
-    function avatarDataURL(initials){
-      const svg = encodeURIComponent(`<?xml version="1.0"?><svg xmlns='http://www.w3.org/2000/svg' width='96' height='96'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0%' stop-color='#dbeafe'/><stop offset='100%' stop-color='#bfdbfe'/></linearGradient></defs><rect rx='16' ry='16' width='96' height='96' fill='url(#g)'/><text x='50%' y='58%' text-anchor='middle' font-family='Inter,Arial' font-size='38' font-weight='700' fill='#1e3a8a'>${initials}</text></svg>`);
-      return `data:image/svg+xml;charset=utf-8,${svg}`;
-    }
-
     const PLAYERS = [
-      { id:'messi',    nombre:'Lionel Messi',          pais:'Argentina', costo:10, goles:110, foto:avatarDataURL('LM') },
-      { id:'cr7',      nombre:'Cristiano Ronaldo',     pais:'Portugal',  costo:9,  goles:130, foto:avatarDataURL('CR') },
-      { id:'ronaldo',  nombre:'Ronaldo Nazário',       pais:'Brasil',    costo:8,  goles:62,  foto:avatarDataURL('RN') },
-      { id:'henry',    nombre:'Thierry Henry',         pais:'Francia',   costo:7,  goles:51,  foto:avatarDataURL('TH') },
-      { id:'vanbasten',nombre:'Marco van Basten',      pais:'Países Bajos', costo:6, goles:24, foto:avatarDataURL('MV') },
-      { id:'drogba',   nombre:'Didier Drogba',         pais:'Costa de Marfil', costo:5, goles:65, foto:avatarDataURL('DD') },
-      { id:'eto',      nombre:'Samuel Eto’o',          pais:'Camerún',   costo:4,  goles:56,  foto:avatarDataURL('SE') },
-      { id:'chicha',   nombre:'Javier "Chicharito" Hernández', pais:'México', costo:3, goles:52, foto:avatarDataURL('JH') },
-      { id:'totti',    nombre:'Francesco Totti',       pais:'Italia',    costo:2,  goles:9,   foto:avatarDataURL('FT') },
-      { id:'alexis',   nombre:'Alexis Sánchez',        pais:'Chile',     costo:4,  goles:51,  foto:avatarDataURL('AS') },
+      { id:'messi',    nombre:'Lionel Messi',          pais:'Argentina', costo:10, goles:110, foto:'https://upload.wikimedia.org/wikipedia/commons/b/b8/Leo_Messi_20180626.jpg' },
+      { id:'cr7',      nombre:'Cristiano Ronaldo',     pais:'Portugal',  costo:9,  goles:130, foto:'https://upload.wikimedia.org/wikipedia/commons/8/8c/Cristiano_Ronaldo_2018.jpg' },
+      { id:'ronaldo',  nombre:'Ronaldo Nazário',       pais:'Brasil',    costo:8,  goles:62,  foto:'https://upload.wikimedia.org/wikipedia/commons/1/1e/Ronaldo_Nazario_2019.jpg' },
+      { id:'henry',    nombre:'Thierry Henry',         pais:'Francia',   costo:7,  goles:51,  foto:'https://upload.wikimedia.org/wikipedia/commons/2/25/Thierry_Henry_2012.jpg' },
+      { id:'vanbasten',nombre:'Marco van Basten',      pais:'Países Bajos', costo:6, goles:24, foto:'https://upload.wikimedia.org/wikipedia/commons/8/8b/Marco_van_Basten_1988.jpg' },
+      { id:'drogba',   nombre:'Didier Drogba',         pais:'Costa de Marfil', costo:5, goles:65, foto:'https://upload.wikimedia.org/wikipedia/commons/3/36/Didier_Drogba_2012.jpg' },
+      { id:'eto',      nombre:'Samuel Eto’o',          pais:'Camerún',   costo:4,  goles:56,  foto:'https://upload.wikimedia.org/wikipedia/commons/4/47/Samuel_Eto%27o_2011.jpg' },
+      { id:'chicha',   nombre:'Javier "Chicharito" Hernández', pais:'México', costo:3, goles:52, foto:'https://upload.wikimedia.org/wikipedia/commons/9/94/Javier_Hern%C3%A1ndez_2018.jpg' },
+      { id:'totti',    nombre:'Francesco Totti',       pais:'Italia',    costo:2,  goles:9,   foto:'https://upload.wikimedia.org/wikipedia/commons/6/6c/Francesco_Totti_2012.jpg' },
+      { id:'alexis',   nombre:'Alexis Sánchez',        pais:'Chile',     costo:4,  goles:51,  foto:'https://upload.wikimedia.org/wikipedia/commons/1/14/Alexis_S%C3%A1nchez_2018.jpg' },
     ];
 
     const leftCol = document.getElementById('leftCol');
@@ -114,25 +112,36 @@
       el.dataset.id = p.id;
       el.dataset.costo = p.costo;
 
+      const leftPart = document.createElement('div');
+      leftPart.className = 'left-part';
+
       const img = document.createElement('img');
       img.className = 'photo';
       img.src = p.foto;
       img.alt = `${p.nombre}`;
+      leftPart.appendChild(img);
 
       const info = document.createElement('div');
       info.className = 'info';
       const h3 = document.createElement('h3'); h3.textContent = `${p.nombre} (${p.pais})`;
-      const meta = document.createElement('div'); meta.className = 'meta'; meta.innerHTML = `Costo: <span class='cost'>${p.costo}</span> · Goles selección: <b>${p.goles}</b>`;
-      info.appendChild(h3); info.appendChild(meta);
+      info.appendChild(h3);
+      leftPart.appendChild(info);
 
-      el.appendChild(img);
-      el.appendChild(info);
+      const rightPart = document.createElement('div');
+      rightPart.className = 'right-part';
+      const goals = document.createElement('div'); goals.className = 'goals'; goals.innerHTML = `<span class="icon" aria-hidden="true">⚽</span> Goles: <b>${p.goles}</b>`;
+      const cost = document.createElement('div'); cost.className = 'cost'; cost.textContent = `Costo: ${p.costo}`;
+      rightPart.appendChild(goals);
+      rightPart.appendChild(cost);
+
+      el.appendChild(leftPart);
+      el.appendChild(rightPart);
 
       if(withRemove){
         const btn = document.createElement('button');
         btn.className = 'remove'; btn.title = 'Quitar'; btn.textContent = '×';
         btn.addEventListener('click', ()=> moveToLeft(p.id));
-        el.appendChild(btn);
+        rightPart.appendChild(btn);
       }
 
       el.addEventListener('dragstart', e=>{
@@ -189,7 +198,5 @@
     render();
   </script>
 </body>
-</html>
-
 </html>
 
