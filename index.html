@@ -1,208 +1,195 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Juego Scrum - Arma tu Delantera</title>
+  <meta charset="UTF-8" />
+  <title>Juego Scrum - Delantera (Drag & Drop + Fotos + Goles)</title>
   <style>
     :root {
-      --ok: #22c55e;
-      --bad: #ef4444;
-      --card-bg: #fefefe;
-      --panel-bg: #fff;
-      --ink-1: #222;
-      --ink-2: #555;
-      --accent: #0070f3;
+      --ok:#22c55e; --bad:#ef4444; --neutral:#94a3b8;
+      --panel:#ffffff; --bg:#f5f7fb; --ink:#111827; --muted:#6b7280; --accent:#2563eb;
     }
-    * { box-sizing: border-box; }
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f9;
-      padding: 20px;
-      display: flex;
-      justify-content: center;
-    }
-    .container {
-      width: 100%;
-      max-width: 1100px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 32px;
-      align-items: start;
-    }
-    h1 { grid-column: 1 / -1; text-align: center; margin: 0 0 10px; color: #333; }
+    *{box-sizing:border-box}
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background:var(--bg); margin:0; padding:24px; color:var(--ink); }
+    h1{margin:0 0 8px 0; font-size:22px}
+    .sub{color:var(--muted); margin-bottom:16px}
 
-    .column {
-      background: var(--panel-bg);
-      border-radius: 12px;
-      padding: 16px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
-      min-height: 520px;
-      display: flex;
-      flex-direction: column;
-      border: 3px solid transparent; /* se pintará en verde/rojo según regla */
-      transition: border-color .15s ease, background .15s ease;
-    }
-    .column h2 { text-align: center; margin: 0 0 12px; }
+    .grid{display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:start}
+    @media (max-width: 880px){ .grid{ grid-template-columns:1fr } }
 
-    .hint { text-align:center; font-size:12px; color:#777; margin-bottom:8px; }
+    .column { background:var(--panel); border:2px dashed var(--neutral); border-radius:16px; padding:14px; min-height:420px; transition:border-color .2s, box-shadow .2s }
+    .column h2 { text-align:center; margin:6px 0 8px }
+    .hint{ text-align:center; color:var(--muted); font-size:13px; margin-bottom:8px }
+    .column.ok{ border-color:var(--ok) }
+    .column.bad{ border-color:var(--bad) }
+    .dropping{ outline:3px dashed #93c5fd; outline-offset:-6px }
 
-    .board { display: flex; flex-direction: column; gap: 10px; }
+    .list{ display:grid; gap:10px; min-height:320px }
 
-    .card {
-      background: var(--card-bg);
-      border-radius: 10px;
-      padding: 10px 12px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.10);
-      cursor: grab;
-      display: grid;
-      grid-template-columns: 1fr auto auto;
-      align-items: center;
-      gap: 8px;
-      border: 1px solid #e5e7eb;
-    }
-    .card h3 { margin: 0; font-size: 16px; color: var(--ink-1); }
-    .card p { margin: 0; font-size: 13px; color: var(--ink-2); }
-    .cost { font-weight: bold; color: var(--accent); }
+    .player{ background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding:10px; display:grid; grid-template-columns:auto 1fr auto; gap:12px; align-items:center; cursor:grab }
+    .player:active{ cursor:grabbing }
+    .photo{ width:48px; height:48px; border-radius:10px; object-fit:cover; border:1px solid #e5e7eb }
+    .info h3{ margin:0; font-size:15px }
+    .meta{ margin-top:2px; font-size:12px; color:var(--muted) }
+    .cost{ font-weight:700; color:var(--accent); }
+    .remove{ display:inline-grid; place-items:center; width:26px; height:26px; border-radius:8px; background:#fee2e2; color:#991b1b; border:1px solid #fecaca; cursor:pointer }
 
-    .remove {
-      display: inline-flex; align-items:center; justify-content:center;
-      width: 22px; height: 22px; line-height: 22px; border-radius: 6px;
-      font-weight: 700; cursor: pointer; user-select: none; border:1px solid #fca5a5;
-      color: var(--bad); background: #fff5f5;
-    }
-    .remove:hover { background: #ffe4e6; }
-
-    .dropping { outline: 3px dashed #94a3b8; outline-offset: -6px; }
-    .valid { border-color: var(--ok); }
-    .invalid { border-color: var(--bad); }
-
-    .footer {
-      grid-column: 1 / -1; display:flex; gap:16px; justify-content:center; margin-top:12px;
-      font-size: 14px; color:#333;
-    }
-    .badge { padding:6px 10px; background:#e5e7eb; border-radius: 999px; }
+    .footer{ display:flex; gap:10px; justify-content:center; margin-top:8px; color:#374151; font-size:14px }
+    .badge{ background:#f3f4f6; border:1px solid #e5e7eb; padding:6px 10px; border-radius:999px }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>⚽ Juego Scrum – Armá tu delantera (3) con presupuesto 15</h1>
+  <h1>⚽ Juego Scrum – Armá tu delantera</h1>
+  <div class="sub">Arrastrá 3 tarjetas a <b>Mi delantera</b>. Presupuesto: <b id="budgetTop">15</b> puntos. Se evalúa el presupuesto desde la 2ª tarjeta.</div>
 
-    <!-- Columna izquierda: Backlog -->
-    <div class="column" id="left-column">
-      <h2>📋 Lista de Jugadores</h2>
-      <div class="hint">Arrastrá hacia la derecha para ficharlos</div>
-      <div class="board" id="players">
-        <div class="card" draggable="true" data-id="messi" data-cost="9"><h3>Lionel Messi</h3><p>🇦🇷 Argentina</p><p>Costo: <span class="cost">9</span></p></div>
-        <div class="card" draggable="true" data-id="cr7" data-cost="9"><h3>Cristiano Ronaldo</h3><p>🇵🇹 Portugal</p><p>Costo: <span class="cost">9</span></p></div>
-        <div class="card" draggable="true" data-id="ronaldo" data-cost="8"><h3>Ronaldo Nazário</h3><p>🇧🇷 Brasil</p><p>Costo: <span class="cost">8</span></p></div>
-        <div class="card" draggable="true" data-id="henry" data-cost="7"><h3>Thierry Henry</h3><p>🇫🇷 Francia</p><p>Costo: <span class="cost">7</span></p></div>
-        <div class="card" draggable="true" data-id="zlatan" data-cost="6"><h3>Zlatan Ibrahimović</h3><p>🇸🇪 Suecia</p><p>Costo: <span class="cost">6</span></p></div>
-        <div class="card" draggable="true" data-id="drogba" data-cost="6"><h3>Didier Drogba</h3><p>🇨🇮 Costa de Marfil</p><p>Costo: <span class="cost">6</span></p></div>
-        <div class="card" draggable="true" data-id="bati" data-cost="5"><h3>Gabriel Batistuta</h3><p>🇦🇷 Argentina</p><p>Costo: <span class="cost">5</span></p></div>
-        <div class="card" draggable="true" data-id="hugo" data-cost="4"><h3>Hugo Sánchez</h3><p>🇲🇽 México</p><p>Costo: <span class="cost">4</span></p></div>
-        <div class="card" draggable="true" data-id="weah" data-cost="4"><h3>George Weah</h3><p>🇱🇷 Liberia</p><p>Costo: <span class="cost">4</span></p></div>
-        <div class="card" draggable="true" data-id="rossi" data-cost="3"><h3>Paolo Rossi</h3><p>🇮🇹 Italia</p><p>Costo: <span class="cost">3</span></p></div>
+  <div class="grid">
+    <section>
+      <div class="column" id="leftCol" data-col="left">
+        <h2>📋 Jugadores (ordenados por costo ↓)</h2>
+        <div class="hint">Arrastrá hacia la derecha para ficharlos</div>
+        <div class="list" id="leftList"></div>
       </div>
-    </div>
+    </section>
 
-    <!-- Columna derecha: Mi Delantera -->
-    <div class="column" id="right-column">
-      <h2>🚀 Mi Delantera</h2>
-      <div class="hint">Soltá aquí tus 3 fichajes</div>
-      <div class="board" id="my-team"></div>
-    </div>
-
-    <div class="footer">
-      <span class="badge" id="count-badge">Seleccionados: 0 / 3</span>
-      <span class="badge" id="budget-badge">Puntos usados: 0 / 15</span>
-    </div>
+    <section>
+      <div class="column" id="rightCol" data-col="right">
+        <h2>🚀 Mi delantera</h2>
+        <div class="hint">Máximo 3. Si superás el presupuesto se marca en rojo.</div>
+        <div class="list" id="rightList"></div>
+        <div class="footer">
+          <span class="badge">Seleccionados: <b id="countSel">0</b>/3</span>
+          <span class="badge">Puntos usados: <b id="pointsUsed">0</b>/<b id="budgetFoot">15</b></span>
+        </div>
+      </div>
+    </section>
   </div>
 
   <script>
-    const leftColumn = document.getElementById('left-column');
-    const rightColumn = document.getElementById('right-column');
-    const playersBoard = document.getElementById('players');
-    const myTeam = document.getElementById('my-team');
+    const BUDGET = 15;
+    document.getElementById('budgetTop').textContent = BUDGET;
+    document.getElementById('budgetFoot').textContent = BUDGET;
 
-    const maxPlayers = 3;
-    const budget = 15;
+    function avatarDataURL(initials){
+      const svg = encodeURIComponent(`<?xml version="1.0"?><svg xmlns='http://www.w3.org/2000/svg' width='96' height='96'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0%' stop-color='#dbeafe'/><stop offset='100%' stop-color='#bfdbfe'/></linearGradient></defs><rect rx='16' ry='16' width='96' height='96' fill='url(#g)'/><text x='50%' y='58%' text-anchor='middle' font-family='Inter,Arial' font-size='38' font-weight='700' fill='#1e3a8a'>${initials}</text></svg>`);
+      return `data:image/svg+xml;charset=utf-8,${svg}`;
+    }
 
-    const countBadge = document.getElementById('count-badge');
-    const budgetBadge = document.getElementById('budget-badge');
+    const PLAYERS = [
+      { id:'messi',    nombre:'Lionel Messi',          pais:'Argentina', costo:10, goles:110, foto:avatarDataURL('LM') },
+      { id:'cr7',      nombre:'Cristiano Ronaldo',     pais:'Portugal',  costo:9,  goles:130, foto:avatarDataURL('CR') },
+      { id:'ronaldo',  nombre:'Ronaldo Nazário',       pais:'Brasil',    costo:8,  goles:62,  foto:avatarDataURL('RN') },
+      { id:'henry',    nombre:'Thierry Henry',         pais:'Francia',   costo:7,  goles:51,  foto:avatarDataURL('TH') },
+      { id:'vanbasten',nombre:'Marco van Basten',      pais:'Países Bajos', costo:6, goles:24, foto:avatarDataURL('MV') },
+      { id:'drogba',   nombre:'Didier Drogba',         pais:'Costa de Marfil', costo:5, goles:65, foto:avatarDataURL('DD') },
+      { id:'eto',      nombre:'Samuel Eto’o',          pais:'Camerún',   costo:4,  goles:56,  foto:avatarDataURL('SE') },
+      { id:'chicha',   nombre:'Javier "Chicharito" Hernández', pais:'México', costo:3, goles:52, foto:avatarDataURL('JH') },
+      { id:'totti',    nombre:'Francesco Totti',       pais:'Italia',    costo:2,  goles:9,   foto:avatarDataURL('FT') },
+      { id:'alexis',   nombre:'Alexis Sánchez',        pais:'Chile',     costo:4,  goles:51,  foto:avatarDataURL('AS') },
+    ];
 
-    // Delegación de eventos para drag de cartas en la columna izquierda
-    playersBoard.addEventListener('dragstart', (e) => {
-      const card = e.target.closest('.card');
-      if (!card) return;
-      e.dataTransfer.setData('text/plain', card.dataset.id);
-      rightColumn.classList.add('dropping');
-    });
+    const leftCol = document.getElementById('leftCol');
+    const rightCol = document.getElementById('rightCol');
+    const leftList = document.getElementById('leftList');
+    const rightList = document.getElementById('rightList');
+    const pointsUsedEl = document.getElementById('pointsUsed');
+    const countSelEl = document.getElementById('countSel');
 
-    document.addEventListener('dragend', () => {
-      rightColumn.classList.remove('dropping');
-    });
+    let selected = [];
 
-    // Habilitar drop sobre la columna derecha
-    rightColumn.addEventListener('dragover', (e) => {
-      e.preventDefault();
-    });
+    function availablePlayers(){
+      return PLAYERS.filter(p => !selected.includes(p.id)).sort((a,b) => b.costo - a.costo);
+    }
 
-    rightColumn.addEventListener('drop', (e) => {
-      e.preventDefault();
-      const id = e.dataTransfer.getData('text/plain');
-      if (!id) return;
+    function render(){
+      leftList.innerHTML = '';
+      for(const p of availablePlayers()) leftList.appendChild(card(p, false));
+      rightList.innerHTML = '';
+      for(const id of selected){ const p = PLAYERS.find(x=>x.id===id); rightList.appendChild(card(p, true)); }
+      updateStatus();
+    }
 
-      // Reglas: máximo 3 y sin duplicados
-      if (myTeam.children.length >= maxPlayers) return;
-      if (Array.from(myTeam.children).some(c => c.dataset.id === id)) return;
+    function card(p, withRemove){
+      const el = document.createElement('div');
+      el.className = 'player';
+      el.draggable = true;
+      el.dataset.id = p.id;
+      el.dataset.costo = p.costo;
 
-      // MOVER la carta (no copiar) desde la izquierda a la derecha
-      const original = playersBoard.querySelector(`.card[data-id="${id}"]`);
-      if (!original) return; // ya no está disponible
+      const img = document.createElement('img');
+      img.className = 'photo';
+      img.src = p.foto;
+      img.alt = `${p.nombre}`;
 
-      // Quitar de izquierda
-      playersBoard.removeChild(original);
+      const info = document.createElement('div');
+      info.className = 'info';
+      const h3 = document.createElement('h3'); h3.textContent = `${p.nombre} (${p.pais})`;
+      const meta = document.createElement('div'); meta.className = 'meta'; meta.innerHTML = `Costo: <span class='cost'>${p.costo}</span> · Goles selección: <b>${p.goles}</b>`;
+      info.appendChild(h3); info.appendChild(meta);
 
-      // Preparar para la derecha
-      original.setAttribute('draggable', 'false');
+      el.appendChild(img);
+      el.appendChild(info);
 
-      // Botón de quitar
-      let removeBtn = document.createElement('span');
-      removeBtn.textContent = '✖';
-      removeBtn.title = 'Quitar de mi delantera';
-      removeBtn.className = 'remove';
-      removeBtn.addEventListener('click', () => {
-        // devolver a la izquierda (y hacerlo draggable de nuevo)
-        original.removeChild(removeBtn);
-        original.setAttribute('draggable', 'true');
-        playersBoard.appendChild(original);
-        evaluateBudget();
+      if(withRemove){
+        const btn = document.createElement('button');
+        btn.className = 'remove'; btn.title = 'Quitar'; btn.textContent = '×';
+        btn.addEventListener('click', ()=> moveToLeft(p.id));
+        el.appendChild(btn);
+      }
+
+      el.addEventListener('dragstart', e=>{
+        e.dataTransfer.setData('text/plain', p.id);
+        e.dataTransfer.effectAllowed = 'move';
       });
 
-      original.appendChild(removeBtn);
-      myTeam.appendChild(original);
+      return el;
+    }
+
+    function allowDropZone(colEl){
+      colEl.addEventListener('dragover', e=>{ e.preventDefault(); colEl.classList.add('dropping'); e.dataTransfer.dropEffect='move'; });
+      colEl.addEventListener('dragleave', ()=> colEl.classList.remove('dropping'));
+      colEl.addEventListener('drop', e=>{
+        e.preventDefault(); colEl.classList.remove('dropping');
+        const id = e.dataTransfer.getData('text/plain');
+        if(!id) return;
+        if(colEl.dataset.col==='right') moveToRight(id); else moveToLeft(id);
+      });
+    }
+
+    allowDropZone(leftCol);
+    allowDropZone(rightCol);
+
+    function moveToRight(id){
+      if(selected.includes(id) || selected.length>=3) return;
+      selected.push(id);
+      render();
+      if(selected.length>=2) evaluateBudget();
+    }
+
+    function moveToLeft(id){
+      const idx = selected.indexOf(id);
+      if(idx!==-1){ selected.splice(idx,1); render(); }
+    }
+
+    function totalPoints(){ return selected.map(id => PLAYERS.find(p=>p.id===id)?.costo||0).reduce((a,b)=>a+b,0); }
+
+    function updateStatus(){
+      const total = totalPoints();
+      pointsUsedEl.textContent = total;
+      countSelEl.textContent = selected.length;
       evaluateBudget();
-    });
+    }
 
-    function evaluateBudget() {
-      const cards = Array.from(myTeam.children);
-      const total = cards.reduce((acc, c) => acc + parseInt(c.dataset.cost, 10), 0);
-
-      // Badges informativos
-      countBadge.textContent = `Seleccionados: ${cards.length} / ${maxPlayers}`;
-      budgetBadge.textContent = `Puntos usados: ${total} / ${budget}`;
-
-      // Sólo evalúa color cuando hay exactamente 3
-      rightColumn.classList.remove('valid', 'invalid');
-      if (cards.length === maxPlayers) {
-        if (total <= budget) {
-          rightColumn.classList.add('valid');
-        } else {
-          rightColumn.classList.add('invalid');
-        }
+    function evaluateBudget(){
+      rightCol.classList.remove('ok','bad');
+      if(selected.length>=2){
+        if(totalPoints() <= BUDGET) rightCol.classList.add('ok');
+        else rightCol.classList.add('bad');
       }
     }
+
+    render();
   </script>
 </body>
+</html>
+
 </html>
 
